@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Махачкала RP — Официальный форум</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f1117',
+                        cardBg: '#181b22',
+                        cardHover: '#1f242e',
+                        accentGold: '#f59e0b',
+                        accentBlue: '#3b82f6',
+                        accentCyan: '#06b6d4',
+                        borderDark: '#2d333b',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f1117; }
+        ::-webkit-scrollbar-thumb { background: #2d333b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col selection:bg-accentBlue selection:text-white">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-cardBg/90 backdrop-blur-md border-b border-borderDark px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <button id="sidebarToggle" class="lg:hidden text-slate-400 hover:text-white text-xl p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchCategory('all')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-accentBlue to-accentCyan flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 text-lg">
+                    М
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wider bg-gradient-to-r from-white via-slate-200 to-accentCyan bg-clip-text text-transparent">МАХАЧКАЛА <span class="text-accentBlue">RP</span></h1>
+                    <p class="text-xs text-slate-400">Игровой форум проекта</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="hidden md:flex items-center relative w-1/3 max-w-md">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-sm"></i>
+            <input type="text" id="searchInput" placeholder="Поиск тем, правил, жалоб..." oninput="handleSearch(this.value)" class="w-full bg-darkBg border border-borderDark rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-accentBlue transition">
+        </div>
+
+        <!-- User Profile & Actions -->
+        <div class="flex items-center space-x-3">
+            <button onclick="openCreateModal()" class="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-accentBlue to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-md shadow-blue-500/20 transition transform active:scale-95">
+                <i class="fa-solid fa-plus"></i>
+                <span>Создать тему</span>
+            </button>
+            
+            <!-- User Switcher Dropdown -->
+            <div class="relative">
+                <button onclick="toggleUserDropdown()" class="flex items-center space-x-3 bg-darkBg border border-borderDark hover:border-slate-600 px-3 py-1.5 rounded-xl transition">
+                    <img id="currentUserAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80" alt="Avatar" class="w-8 h-8 rounded-lg object-cover">
+                    <div class="text-left hidden sm:block">
+                        <div id="currentUserName" class="text-xs font-semibold text-slate-200">dzenkiku</div>
+                        <div id="currentUserRole" class="text-[10px] text-accentGold font-medium">Администратор</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-xs text-slate-400 ml-1"></i>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-56 bg-cardBg border border-borderDark rounded-2xl shadow-2xl py-2 z-50">
+                    <div class="px-4 py-2 border-b border-borderDark">
+                        <p class="text-xs text-slate-400">Вы вошли как:</p>
+                        <p id="dropdownUsername" class="text-sm font-bold text-white">dzenkiku</p>
+                    </div>
+                    <button onclick="switchUser('dzenkiku', 'Администратор', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80')" class="w-full text-left px-4 py-2 hover:bg-cardHover flex items-center space-x-3 text-sm transition">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80" class="w-6 h-6 rounded-md object-cover">
+                        <span>dzenkiku (Админ)</span>
+                    </button>
+                    <button onclick="switchUser('Ruslan', 'Игрок', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&h=100&q=80')" class="w-full text-left px-4 py-2 hover:bg-cardHover flex items-center space-x-3 text-sm transition">
+                        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&h=100&q=80" class="w-6 h-6 rounded-md object-cover">
+                        <span>Ruslan (Игрок)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex flex-col lg:flex-row max-w-7xl w-full mx-auto p-4 lg:p-6 gap-6">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-full lg:w-72 flex-shrink-0 bg-cardBg border border-borderDark rounded-2xl p-4 h-fit space-y-6 hidden lg:block">
+            <div>
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-3">Категории форума</h3>
+                <nav id="categoryNav" class="space-y-1">
+                    <button onclick="switchCategory('all')" data-cat="all" class="cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition bg-accentBlue text-white shadow-md shadow-blue-500/20">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-fire w-5 text-center"></i><span>Все темы</span></span>
+                        <span class="bg-black/20 px-2 py-0.5 rounded-md text-xs" id="count-all">0</span>
+                    </button>
+                    <button onclick="switchCategory('official')" data-cat="official" class="cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-cardHover hover:text-white transition">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-bullhorn w-5 text-center text-accentGold"></i><span>Официально</span></span>
+                        <span class="bg-borderDark px-2 py-0.5 rounded-md text-xs text-slate-400" id="count-official">0</span>
+                    </button>
+                    <button onclick="switchCategory('community')" data-cat="community" class="cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-cardHover hover:text-white transition">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-users w-5 text-center text-emerald-400"></i><span>Community</span></span>
+                        <span class="bg-borderDark px-2 py-0.5 rounded-md text-xs text-slate-400" id="count-community">0</span>
+                    </button>
+                    <button onclick="switchCategory('support')" data-cat="support" class="cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-cardHover hover:text-white transition">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-shield-halved w-5 text-center text-rose-400"></i><span>Поддержка</span></span>
+                        <span class="bg-borderDark px-2 py-0.5 rounded-md text-xs text-slate-400" id="count-support">0</span>
+                    </button>
+                    <button onclick="switchCategory('factions')" data-cat="factions" class="cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-cardHover hover:text-white transition">
+                        <span class="flex items-center space-x-3"><i class="fa-solid fa-landmark w-5 text-center text-purple-400"></i><span>Фракции и Заявления</span></span>
+                        <span class="bg-borderDark px-2 py-0.5 rounded-md text-xs text-slate-400" id="count-factions">0</span>
+                    </button>
+                </nav>
+            </div>
+
+            <hr class="border-borderDark">
+
+            <!-- Server Quick Stats -->
+            <div class="bg-darkBg border border-borderDark rounded-xl p-4 space-y-3">
+                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Статус сервера</h4>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-slate-300">Махачкала Online</span>
+                    </span>
+                    <span class="text-emerald-400 font-bold">984 / 1000</span>
+                </div>
+                <div class="w-full bg-borderDark rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-emerald-500 h-full rounded-full" style="width: 98%;"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-2 text-center">
+                    <div class="bg-cardBg p-2 rounded-lg border border-borderDark">
+                        <div class="text-[10px] text-slate-400">Игроков</div>
+                        <div class="text-sm font-bold text-white">984</div>
+                    </div>
+                    <div class="bg-cardBg p-2 rounded-lg border border-borderDark">
+                        <div class="text-[10px] text-slate-400">Рекорд</div>
+                        <div class="text-sm font-bold text-accentGold">1000</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Feed -->
+        <main class="flex-1 space-y-4">
+            
+            <!-- Category Banner / Title -->
+            <div id="categoryHeader" class="bg-gradient-to-r from-cardBg to-cardHover border border-borderDark rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div>
+                    <div class="flex items-center space-x-2 text-xs font-semibold text-accentBlue mb-1 uppercase tracking-wider" id="currentCategoryBadge">
+                        <i class="fa-solid fa-fire"></i> <span>Все обсуждения</span>
+                    </div>
+                    <h2 id="currentCategoryTitle" class="text-2xl font-bold text-white tracking-tight">Все темы форума</h2>
+                    <p id="currentCategoryDesc" class="text-sm text-slate-400 mt-1">Актуальные новости, жалобы, предложения и жизнь проекта Махачкала RP.</p>
+                </div>
+                <button onclick="openCreateModal()" class="sm:hidden w-full sm:w-auto bg-accentBlue text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-md">
+                    <i class="fa-solid fa-plus mr-2"></i> Создать тему
+                </button>
+            </div>
+
+            <!-- Filters & Sorting Bar -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-cardBg border border-borderDark p-3 rounded-2xl">
+                <div class="flex items-center space-x-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    <button onclick="setFilter('all')" data-filter="all" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-accentBlue text-white transition whitespace-nowrap">Все</button>
+                    <button onclick="setFilter('pinned')" data-filter="pinned" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-cardHover transition whitespace-nowrap">Закрепленные</button>
+                    <button onclick="setFilter('hot')" data-filter="hot" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-cardHover transition whitespace-nowrap">Популярные</button>
+                </div>
+                <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                    <span class="text-xs text-slate-400">Сортировка:</span>
+                    <select id="sortSelect" onchange="changeSort(this.value)" class="bg-darkBg border border-borderDark rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-accentBlue">
+                        <option value="newest">Сначала новые</option>
+                        <option value="popular">По количеству ответов</option>
+                        <option value="views">По просмотрам</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Topics List Container -->
+            <div id="topicsContainer" class="space-y-3">
+                <!-- Dynamic topics rendered here -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Detailed Topic View (Hidden by default, shown when clicking a topic) -->
+    <div id="topicDetailView" class="hidden max-w-5xl w-full mx-auto p-4 lg:p-6 space-y-6">
+        <button onclick="closeTopicDetail()" class="flex items-center space-x-2 text-sm text-slate-400 hover:text-white bg-cardBg border border-borderDark px-4 py-2 rounded-xl transition">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Назад к списку тем</span>
+        </button>
+
+        <!-- Main Topic Card -->
+        <div class="bg-cardBg border border-borderDark rounded-2xl p-6 space-y-4 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img id="detailAuthorAvatar" src="" class="w-12 h-12 rounded-xl object-cover border border-borderDark">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span id="detailAuthorName" class="font-bold text-white text-base"></span>
+                            <span id="detailAuthorRole" class="text-[10px] bg-accentGold/10 text-accentGold border border-accentGold/20 px-2 py-0.5 rounded-md font-semibold"></span>
+                        </div>
+                        <span id="detailTopicDate" class="text-xs text-slate-400"></span>
+                    </div>
+                </div>
+                <span id="detailCategoryBadge" class="text-xs px-3 py-1 rounded-xl font-medium border"></span>
+            </div>
+
+            <h1 id="detailTopicTitle" class="text-2xl font-bold text-white"></h1>
+            <div id="detailTopicContent" class="text-slate-300 text-sm leading-relaxed border-t border-borderDark pt-4"></div>
+
+            <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-borderDark">
+                <div class="flex items-center space-x-4">
+                    <span><i class="fa-solid fa-eye mr-1.5"></i><span id="detailViews"></span> просмотров</span>
+                    <span><i class="fa-solid fa-comment mr-1.5"></i><span id="detailRepliesCount"></span> ответов</span>
+                </div>
+                <button onclick="likeTopic()" class="flex items-center space-x-1.5 bg-darkBg hover:bg-borderDark px-3 py-1.5 rounded-xl border border-borderDark text-slate-300 transition">
+                    <i class="fa-solid fa-heart text-rose-500"></i>
+                    <span id="detailLikes">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="space-y-4">
+            <h3 class="text-lg font-bold text-white">Ответы в теме (<span id="commentsCountTitle">0</span>)</h3>
+            <div id="commentsContainer" class="space-y-3">
+                <!-- Rendered comments -->
+            </div>
+
+            <!-- Add Comment Form -->
+            <div class="bg-cardBg border border-borderDark rounded-2xl p-4 space-y-3 shadow-md mt-6">
+                <h4 class="text-sm font-semibold text-slate-200">Оставить ответ</h4>
+                <textarea id="newCommentText" rows="3" placeholder="Напишите ваш ответ по теме..." class="w-full bg-darkBg border border-borderDark rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-accentBlue transition"></textarea>
+                <div class="flex justify-end">
+                    <button onclick="submitComment()" class="bg-accentBlue hover:bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-md transition">
+                        Отправить ответ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Topic Modal -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-cardBg border border-borderDark rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <div class="flex items-center justify-between border-b border-borderDark pb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-accentBlue"></i>
+                    <span>Создать новую тему</span>
+                </h3>
+                <button onclick="closeCreateModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Категория</label>
+                    <select id="modalCategory" class="w-full bg-darkBg border border-borderDark rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-accentBlue">
+                        <option value="official">Официально (Новости, Правила)</option>
+                        <option value="community">Community (Курилка, Творчество)</option>
+                        <option value="support">Поддержка (Жалобы, Амнистии)</option>
+                        <option value="factions">Фракции и Заявления (Лидерки)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Заголовок темы</label>
+                    <input type="text" id="modalTitle" placeholder="Например: Предложение по автопарку ГИБДД" class="w-full bg-darkBg border border-borderDark rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-accentBlue">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Содержание</label>
+                    <textarea id="modalContent" rows="5" placeholder="Опишите вашу идею, жалобу или заявление подробно..." class="w-full bg-darkBg border border-borderDark rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-accentBlue"></textarea>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-2">
+                <button onclick="closeCreateModal()" class="bg-darkBg border border-borderDark hover:bg-borderDark text-slate-300 px-4 py-2 rounded-xl text-sm font-medium transition">
+                    Отмена
+                </button>
+                <button onclick="createNewTopic()" class="bg-accentBlue hover:bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-md transition">
+                    Опубликовать тему
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 z-50 bg-cardBg border border-borderDark px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-slate-200 font-medium">Успешно выполнено</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Mock State Data
+        let currentUser = {
+            name: 'dzenkiku',
+            role: 'Администратор',
+            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80',
+            roleColor: 'text-accentGold bg-accentGold/10 border-accentGold/20'
+        };
+
+        let currentCategory = 'all';
+        let currentFilter = 'all';
+        let currentSort = 'newest';
+        let searchQuery = '';
+        let activeTopicId = null;
+
+        const categoriesMeta = {
+            all: { title: 'Все темы форума', desc: 'Актуальные новости, жалобы, предложения и жизнь проекта Махачкала RP.', name: 'Все обсуждения', icon: 'fa-fire' },
+            official: { title: 'Официальный раздел', desc: 'Глобальные обновления сервера, правила проекта и важные объявления администрации.', name: 'Официально', icon: 'fa-bullhorn', badgeClass: 'bg-accentGold/10 text-accentGold border-accentGold/20' },
+            community: { title: 'Community & Курилка', desc: 'Свободное общение игроков, творчество, скриншоты и интересные идеи.', name: 'Community', icon: 'fa-users', badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+            support: { title: 'Поддержка и Жалобы', desc: 'Раздел жалоб на игроков и администрацию, а также амнистии заблокированных аккаунтов.', name: 'Поддержка', icon: 'fa-shield-halved', badgeClass: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
+            factions: { title: 'Фракции и Заявления', desc: 'Электронные заявки на лидерские посты, обзвоны и вступление в гос. структуры.', name: 'Фракции', icon: 'fa-landmark', badgeClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20' }
+        };
+
+        let topics = [
+            {
+                id: 1,
+                category: 'official',
+                title: '📌 Глобальное обновление 3.2: Новая карта Дербента и автопарк',
+                content: 'Уважаемые игроки! Вышло масштабное обновление на Махачкала RP. Мы добавили совершенно новый район, расширили автопарк отечественных и иностранных автомобилей, а также исправили более 150 багов оптимизации. Залетайте в игру!',
+                author: 'dzenkiku',
+                role: 'Основатель',
+                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80',
+                date: 'Сегодня, 01:20',
+                pinned: true,
+                views: 1420,
+                likes: 89,
+                comments: [
+                    { id: 1, author: 'Ruslan', role: 'Игрок', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&h=100&q=80', date: 'Сегодня, 01:45', text: 'Обнова топ! Особенно приоры завезли шикарные.' },
+                    { id: 2, author: 'Magomed_05', role: 'Медиа', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80', date: 'Сегодня, 02:10', text: 'Спасибо за крутой контент, ждем стрим!' }
+                ]
+            },
+            {
+                id: 2,
+                category: 'official',
+                title: '📜 Общие правила проекта Махачкала RP [Актуально на 2026 год]',
+                content: 'Перед началом игры на нашем сервере каждый игрок обязан ознакомиться с правилами проекта. Незнание правил не освобождает от ответственности. Включает правила Зеленой Зоны, DM, NonRP, MG и правила лидера.',
+                author: 'Admin_Mahachkala',
+                role: 'Главный Администратор',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80',
+                date: '01 Окт 2026',
+                pinned: true,
+                views: 3105,
+                likes: 142,
+                comments: [
+                    { id: 1, author: 'Muslim', role: 'Игрок', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80', date: '02 Окт 2026', text: 'Всё четко и понятно расписано.' }
+                ]
+            },
+            {
+                id: 3,
+                category: 'support',
+                title: 'Жалоба на игрока №4892 (DM + NonRP Drive)',
+                content: 'Здравствуйте! Ехал на заказ инкассации, игрок с айди 4892 начал подрезать без причины и расстрелял машину из дробовика на светофоре. Прикладываю видеофиксацию нарушения.',
+                author: 'Ruslan',
+                role: 'Игрок',
+                avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&h=100&q=80',
+                date: 'Вчера, 22:15',
+                pinned: false,
+                views: 184,
+                likes: 4,
+                comments: [
+                    { id: 1, author: 'dzenkiku', role: 'Администратор', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80', date: 'Вчера, 23:00', text: 'Игрок наказан деморганом на 120 минут. Закрыто.' }
+                ]
+            },
+            {
+                id: 4,
+                category: 'community',
+                title: 'Курилка: Какая музыка играет у вас в машине?',
+                content: 'Делимся треками и любимыми исполнителями под которые круто кататься по ночному городу под дождем на сервере!',
+                author: 'Magomed_05',
+                role: 'Медиа',
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80',
+                date: '3 дня назад',
+                pinned: false,
+                views: 940,
+                likes: 38,
+                comments: []
+            },
+            {
+                id: 5,
+                category: 'factions',
+                title: 'Заявление на пост Лидера ГИБДД г. Махачкала',
+                content: 'Открыты заявки на пост лидера государственной инспекции безопасности дорожного движения. Требования: возраст от 15 лет, адекватность, знание устава и правил сервера.',
+                author: 'Admin_Mahachkala',
+                role: 'Главный Администратор',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80',
+                date: '4 дня назад',
+                pinned: true,
+                views: 1250,
+                likes: 24,
+                comments: []
+            }
+        ];
+
+        // Initialize App on Load
+        window.onload = function() {
+            renderTopics();
+            updateCounts();
+        };
+
+        // Switch Category
+        function switchCategory(cat) {
+            currentCategory = cat;
+            closeTopicDetail();
+            
+            // Update active state in sidebar
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) {
+                    btn.className = 'cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition bg-accentBlue text-white shadow-md shadow-blue-500/20';
+                } else {
+                    btn.className = 'cat-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-cardHover hover:text-white transition';
+                }
+            });
+
+            // Update header info
+            const meta = categoriesMeta[cat];
+            document.getElementById('currentCategoryTitle').innerText = meta.title;
+            document.getElementById('currentCategoryDesc').innerText = meta.desc;
+            document.getElementById('currentCategoryBadge').innerHTML = `<i class="fa-solid ${meta.icon}"></i> <span>${meta.name}</span>`;
+
+            renderTopics();
+        }
+
+        // Set Filter (all, pinned, hot)
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.filter === filter) {
+                    btn.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-accentBlue text-white transition whitespace-nowrap';
+                } else {
+                    btn.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-cardHover transition whitespace-nowrap';
+                }
+            });
+            renderTopics();
+        }
+
+        // Change Sort
+        function changeSort(sortVal) {
+            currentSort = sortVal;
+            renderTopics();
+        }
+
+        // Search Handler
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase();
+            renderTopics();
+        }
+
+        // Update Category Counts
+        function updateCounts() {
+            document.getElementById('count-all').innerText = topics.length;
+            document.getElementById('count-official').innerText = topics.filter(t => t.category === 'official').length;
+            document.getElementById('count-community').innerText = topics.filter(t => t.category === 'community').length;
+            document.getElementById('count-support').innerText = topics.filter(t => t.category === 'support').length;
+            document.getElementById('count-factions').innerText = topics.filter(t => t.category === 'factions').length;
+        }
+
+        // Render Topics Feed
+        function renderTopics() {
+            const container = document.getElementById('topicsContainer');
+            
+            let filtered = topics.filter(t => {
+                let matchCat = (currentCategory === 'all' || t.category === currentCategory);
+                let matchSearch = (t.title.toLowerCase().includes(searchQuery) || t.content.toLowerCase().includes(searchQuery));
+                let matchFilter = true;
+                if (currentFilter === 'pinned') matchFilter = t.pinned;
+                if (currentFilter === 'hot') matchFilter = t.comments.length >= 1 || t.views > 1000;
+                return matchCat && matchSearch && matchFilter;
+            });
+
+            // Sorting
+            filtered.sort((a, b) => {
+                if (currentSort === 'popular') return b.comments.length - a.comments.length;
+                if (currentSort === 'views') return b.views - a.views;
+                return b.id - a.id; // newest default
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-cardBg border border-borderDark rounded-2xl p-12 text-center space-y-3">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-600"></i>
+                        <h3 class="text-lg font-bold text-white">Темы не найдены</h3>
+                        <p class="text-sm text-slate-400">По вашему запросу или в данной категории пока нет активных обсуждений.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(t => {
+                const meta = categoriesMeta[t.category];
+                return `
+                    <div onclick="openTopic(${t.id})" class="bg-cardBg border border-borderDark hover:border-slate-600 rounded-2xl p-4 sm:p-5 transition cursor-pointer group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="flex items-start space-x-4 flex-1">
+                            <img src="${t.avatar}" alt="${t.author}" class="w-10 h-10 rounded-xl object-cover border border-borderDark flex-shrink-0 mt-0.5">
+                            <div class="space-y-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    ${t.pinned ? '<span class="bg-accentGold/10 text-accentGold border border-accentGold/20 text-[10px] px-2 py-0.5 rounded-md font-semibold"><i class="fa-solid fa-thumbtack mr-1"></i> Закреплено</span>' : ''}
+                                    <span class="text-xs px-2.5 py-0.5 rounded-md font-medium border ${meta.badgeClass}">${meta.name}</span>
+                                    <span class="text-xs text-slate-400">• ${t.date}</span>
+                                </div>
+                                <h3 class="text-base font-bold text-white group-hover:text-accentBlue transition">${t.title}</h3>
+                                <p class="text-xs text-slate-400 line-clamp-1">${t.content}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto text-xs text-slate-400 border-t sm:border-t-0 pt-2 sm:pt-0 border-borderDark gap-1">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <span title="Просмотры"><i class="fa-solid fa-eye mr-1"></i>${t.views}</span>
+                                <span title="Ответы"><i class="fa-solid fa-comment mr-1"></i>${t.comments.length}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-500">Автор: <span class="text-slate-300 font-medium">${t.author}</span></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open Detailed Topic View
+        function openTopic(id) {
+            activeTopicId = id;
+            const topic = topics.find(t => t.id === id);
+            if(!topic) return;
+
+            topic.views++; // Increment views
+
+            // Populate view
+            document.getElementById('detailAuthorAvatar').src = topic.avatar;
+            document.getElementById('detailAuthorName').innerText = topic.author;
+            document.getElementById('detailAuthorRole').innerText = topic.role;
+            document.getElementById('detailTopicDate').innerText = topic.date;
+            document.getElementById('detailTopicTitle').innerText = topic.title;
+            document.getElementById('detailTopicContent').innerText = topic.content;
+            document.getElementById('detailViews').innerText = topic.views;
+            document.getElementById('detailRepliesCount').innerText = topic.comments.length;
+            document.getElementById('detailLikes').innerText = topic.likes;
+            
+            const meta = categoriesMeta[topic.category];
+            const badge = document.getElementById('detailCategoryBadge');
+            badge.innerText = meta.name;
+            badge.className = `text-xs px-3 py-1 rounded-xl font-medium border ${meta.badgeClass}`;
+
+            renderComments(topic.comments);
+
+            // Toggle views
+            document.querySelector('main').classList.add('hidden');
+            document.getElementById('topicDetailView').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeTopicDetail() {
+            activeTopicId = null;
+            document.getElementById('topicDetailView').classList.add('hidden');
+            document.querySelector('main').classList.remove('hidden');
+            renderTopics();
+        }
+
+        // Render Comments
+        function renderComments(comments) {
+            const container = document.getElementById('commentsContainer');
+            document.getElementById('commentsCountTitle').innerText = comments.length;
+
+            if(comments.length === 0) {
+                container.innerHTML = `<div class="bg-cardBg border border-borderDark rounded-xl p-6 text-center text-sm text-slate-400">Пока никто не оставил ответ. Будьте первыми!</div>`;
+                return;
+            }
+
+            container.innerHTML = comments.map(c => `
+                <div class="bg-cardBg border border-borderDark rounded-2xl p-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="${c.avatar}" class="w-8 h-8 rounded-lg object-cover border border-borderDark">
+                            <div>
+                                <span class="font-semibold text-white text-xs">${c.author}</span>
+                                <span class="text-[10px] text-accentGold ml-2 bg-accentGold/10 px-2 py-0.5 rounded">${c.role}</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-slate-400">${c.date}</span>
+                    </div>
+                    <p class="text-sm text-slate-300 pl-11">${c.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // Like Topic
+        function likeTopic() {
+            const topic = topics.find(t => t.id === activeTopicId);
+            if(topic) {
+                topic.likes++;
+                document.getElementById('detailLikes').innerText = topic.likes;
+                showToast('Вы оценили тему!');
+            }
+        }
+
+        // Submit New Comment
+        function submitComment() {
+            const text = document.getElementById('newCommentText').value.trim();
+            if(!text) {
+                showToast('Введите текст ответа!');
+                return;
+            }
+
+            const topic = topics.find(t => t.id === activeTopicId);
+            if(topic) {
+                topic.comments.push({
+                    id: topic.comments.length + 1,
+                    author: currentUser.name,
+                    role: currentUser.role,
+                    avatar: currentUser.avatar,
+                    date: 'Только что',
+                    text: text
+                });
+                document.getElementById('newCommentText').value = '';
+                renderComments(topic.comments);
+                document.getElementById('detailRepliesCount').innerText = topic.comments.length;
+                showToast('Ответ успешно опубликован!');
+            }
+        }
+
+        // Modal Controls
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+            document.getElementById('modalTitle').value = '';
+            document.getElementById('modalContent').value = '';
+        }
+
+        // Create New Topic
+        function createNewTopic() {
+            const cat = document.getElementById('modalCategory').value;
+            const title = document.getElementById('modalTitle').value.trim();
+            const content = document.getElementById('modalContent').value.trim();
+
+            if(!title || !content) {
+                showToast('Заполните все поля!');
+                return;
+            }
+
+            const newTopic = {
+                id: topics.length + 1,
+                category: cat,
+                title: title,
+                content: content,
+                author: currentUser.name,
+                role: currentUser.role,
+                avatar: currentUser.avatar,
+                date: 'Только что',
+                pinned: false,
+                views: 1,
+                likes: 0,
+                comments: []
+            };
+
+            topics.unshift(newTopic);
+            updateCounts();
+            closeCreateModal();
+            renderTopics();
+            showToast('Тема успешно создана!');
+        }
+
+        // User Switcher
+        function toggleUserDropdown() {
+            const dd = document.getElementById('userDropdown');
+            dd.classList.toggle('hidden');
+        }
+
+        function switchUser(name, role, avatar) {
+            currentUser.name = name;
+            currentUser.role = role;
+            currentUser.avatar = avatar;
+
+            document.getElementById('currentUserName').innerText = name;
+            document.getElementById('currentUserRole').innerText = role;
+            document.getElementById('currentUserAvatar').src = avatar;
+            document.getElementById('dropdownUsername').innerText = name;
+            document.getElementById('userDropdown').classList.add('hidden');
+
+            showToast(`Вы переключились на аккаунт: ${name}`);
+        }
+
+        // Toast Notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.closest('#userDropdown') && !event.target.closest('button[onclick="toggleUserDropdown()"]')) {
+                document.getElementById('userDropdown').classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
